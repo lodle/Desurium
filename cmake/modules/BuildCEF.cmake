@@ -293,3 +293,24 @@ else(BUILD_CEF)
   endif()
 endif()
 
+  if (DEBUG)
+	ExternalProject_Add(
+	  fetch_cef_res
+	  URL "${CEF_RES_URL}"
+	  URL_MD5 ${CEF_RES_MD5}
+	  UPDATE_COMMAND ""
+	  BUILD_IN_SOURCE 1
+	  CONFIGURE_COMMAND ""
+	  BUILD_COMMAND ""
+	  INSTALL_COMMAND ""
+	)
+	
+    ExternalProject_Get_Property(
+	  fetch_cef_res
+  	  source_dir
+    )	
+	
+	add_custom_command(TARGET fetch_cef_res POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${source_dir}\\." "${CMAKE_OUTPUT}\\resources\\.")
+	SET_PROPERTY(TARGET fetch_cef_res PROPERTY FOLDER "ThirdParty")  
+  endif()
+

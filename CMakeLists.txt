@@ -220,7 +220,7 @@ SetupDownloadUrl(DEPOT_TOOLS "https://s3-us-west-2.amazonaws.com/lecs.desura.lin
 SetupDownloadUrl(WXWIDGET "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/wxWidgets-2.9.3.tar.bz2" 6b6003713289ea4d3cd9b49c5db5b721)
 SetupDownloadUrl(V8 "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/v8-3.18.5.14.tar.bz2" 657802ea63c89190fd510ee1a2a719bf)
 
-
+SetupDownloadUrl(CEF_RES "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/webkit_resources_93824.zip" 41b6690ec3263142c7d61133cb5f1cd2)
 ###############################################################################
 # build some externel projects
 ###############################################################################
