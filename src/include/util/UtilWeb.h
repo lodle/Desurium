@@ -159,6 +159,12 @@ public:
 		m_pWC = newHttpHandle(url, useSsl);
 	}
 
+	HttpHandle(HttpHandle &handle)
+	{
+		m_pWC = handle.m_pWC;
+		handle.m_pWC = NULL;
+	}
+
 	~HttpHandle()
 	{
 		if (m_pWC)
@@ -171,6 +177,15 @@ public:
 			m_pWC = newHttpHandle();
 
 		return m_pWC;
+	}
+
+	void operator=(HttpHandle &handle)
+	{
+		if (m_pWC)
+			m_pWC->del();
+
+		m_pWC = handle.m_pWC;
+		handle.m_pWC = NULL;
 	}
 
 private:
