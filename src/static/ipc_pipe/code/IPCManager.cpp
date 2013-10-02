@@ -315,6 +315,12 @@ WeakPtr<IPCClass> IPCManager::createClass(const char* name)
 
 IPCParameterI* IPCManager::createClass(uint32 hash, uint32 id)
 {
+	if (!g_pmIPCClassList)
+	{
+		gcException e(ERR_IPC, "Class list is NULL");
+		return new PException(e);
+	}
+
 	std::map<uint32, newClassFunc>::iterator it = g_pmIPCClassList->find(hash);
 
 	if (it == g_pmIPCClassList->end())

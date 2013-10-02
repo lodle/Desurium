@@ -73,6 +73,10 @@ BootLoader::~BootLoader()
 
 void BootLoader::InitInstance()
 {
+#ifdef DEBUG
+	BootLoaderUtil::WaitForDebugger();
+#endif
+
 	if (BootLoaderUtil::GetOSId() == WINDOWS_PRE2000)
 	{
 		::MessageBox(NULL, PRODUCT_NAME " needs Windows XP or better to run.", PRODUCT_NAME " Error: Old Windows", MB_OK);
@@ -110,11 +114,7 @@ void BootLoader::loadUICore()
 		exit(-100);			
 	}
 
-#ifdef DEBUG
-	const char* dllname = "utilcore-d.dll";
-#else
 	const char* dllname = "utilcore.dll";
-#endif
 
 	if (!m_hUICore.load(dllname))
 	{

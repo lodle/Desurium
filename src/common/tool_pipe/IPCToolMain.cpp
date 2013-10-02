@@ -32,61 +32,81 @@ REG_IPC_CLASS( IPCToolMain );
 
 #ifndef DESURA_CLIENT
 
+#include "log.h"
+#include "LogCallback.h"
+extern LogCallback* g_pLogCallback;
+
 bool g_bLogEnabled = true;
 
-void PrintfMsg(const char* format, ...)
+
+void IPCTool_Msg(const char* msg, Color *col = NULL)
 {
 	if (!g_pToolMain || !g_bLogEnabled)
 		return;
 
-	va_list args;
-	va_start(args, format);
+	if (!msg)
+		return;
 
-	gcString str;
-	str.vformat(format, args);
-	g_pToolMain->message(str.c_str());
-
-	va_end(args);
+	g_pToolMain->message(msg);
 }
 
-void LogMsg(int type, std::string msg, Color* col)
+void IPCTool_Msg_W(const wchar_t* msg, Color *col = NULL)
 {
-	OutputDebugStringA(msg.c_str());
-
 	if (!g_pToolMain || !g_bLogEnabled)
 		return;
 
-	switch (type)
-	{
-	case MT_MSG:
-	case MT_MSG_COL:
-		g_pToolMain->message(msg.c_str());
-		break;
+	if (!msg)
+		return;
 
-	case MT_WARN:
-		g_pToolMain->warning(msg.c_str());
-		break;
-	};
+	g_pToolMain->message(gcString(msg).c_str());
 }
 
-void LogMsg(int type, std::wstring msg, Color* col)
+void IPCTool_Warn(const char* msg)
 {
-	OutputDebugStringW(msg.c_str());
-
 	if (!g_pToolMain || !g_bLogEnabled)
 		return;
 
-	switch (type)
-	{
-	case MT_MSG:
-	case MT_MSG_COL:
-		g_pToolMain->message(gcString(msg).c_str());
-		break;
+	if (!msg)
+		return;
 
-	case MT_WARN:
-		g_pToolMain->warning(gcString(msg).c_str());
-		break;
-	};
+	g_pToolMain->warning(msg);
+}
+
+void IPCTool_Warn_W(const wchar_t* msg)
+{
+	if (!g_pToolMain || !g_bLogEnabled)
+		return;
+
+	if (!msg)
+		return;
+
+	g_pToolMain->warning(gcString(msg).c_str());
+}
+
+void IPCTool_Debug(const char* msg)
+{
+	if (!g_pToolMain || !g_bLogEnabled)
+		return;
+
+#ifdef DEBUG
+	if (!msg)
+		return;
+
+	g_pToolMain->debug(msg);
+#endif
+}
+
+void IPCTool_Debug_W(const wchar_t* msg)
+{
+	if (!g_pToolMain || !g_bLogEnabled)
+		return;
+
+#ifdef DEBUG
+	if (!msg)
+		return;
+
+	g_pToolMain->debug(gcString(msg).c_str());
+#endif
 }
 
 #endif
@@ -98,6 +118,13 @@ IPCToolMain::IPCToolMain(IPC::IPCManager* mang, uint32 id, DesuraId itemId) : IP
 	g_pToolMain = this;
 
 #ifndef DESURA_CLIENT
+	g_pLogCallback->RegMsg(&IPCTool_Msg);
+	g_pLogCallback->RegMsg(&IPCTool_Msg_W);
+	g_pLogCallback->RegWarn(&IPCTool_Warn);
+	g_pLogCallback->RegWarn(&IPCTool_Warn_W);
+	g_pLogCallback->RegDebug(&IPCTool_Debug);
+	g_pLogCallback->RegDebug(&IPCTool_Debug_W);
+
 	m_pThread = NULL;
 #endif
 }
@@ -132,17 +159,17 @@ void IPCToolMain::registerFunctions()
 
 void IPCToolMain::warning(const char* msg)
 {
-	Warning(gcString("DesuraService: {0}", msg));
+	Warning(gcString("ToolHelper: {0}", msg));
 }
 
 void IPCToolMain::message(const char* msg)
 {
-	Msg(gcString("DesuraService: {0}", msg));
+	Msg(gcString("ToolHelper: {0}", msg));
 }
 
 void IPCToolMain::debug(const char* msg)
 {
-	Debug(gcString("DesuraService: {0}", msg));
+	Debug(gcString("ToolHelper: {0}", msg));
 }	
 
 gcException IPCToolMain::installTool(UserCore::ToolInfo* info)
