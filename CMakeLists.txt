@@ -196,31 +196,37 @@ endif()
 # SVN, HTTP stuff
 ###############################################################################
 
+if (WITH_LOCAL_MIRROR)
+  set(DOWNLOAD_URL "http://localhost/")
+else()
+  set(DOWNLOAD_URL "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/")
+endif()
+
 macro(SetupDownloadUrl name url md5)
-  set(${name}_URL_DEFAULT "${url}")
+  set(${name}_URL_DEFAULT "${DOWNLOAD_URL}${url}")
   set(${name}_URL ${${name}_URL_DEFAULT} CACHE STRING "URL to get ${name} archive")
   set(${name}_MD5 ${md5} CACHE STRING "Md5 for ${name} archive")
 endmacro()
 
 if(WIN32)
-  SetupDownloadUrl(BOOST "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/boost_1_53_0.zip" c618e030fd4882e4dbacf54baf824544)
-  SetupDownloadUrl(CEF_BIN "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/cef_bin.zip" c9c0379579d9d26557ca8f4b42f937f2)
-  SetupDownloadUrl(DESURA_EXTRA_BIN "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/desura_extra_bin.zip" fdb2a4dd704a90e5174c64d3eaf8392b) 
+  SetupDownloadUrl(BOOST "boost_1_53_0.zip" c618e030fd4882e4dbacf54baf824544)
+  SetupDownloadUrl(CEF_BIN "cef_bin.zip" c9c0379579d9d26557ca8f4b42f937f2)
+  SetupDownloadUrl(DESURA_EXTRA_BIN "desura_extra_bin.zip" fdb2a4dd704a90e5174c64d3eaf8392b) 
 endif()
 
-SetupDownloadUrl(BREAKPAD "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/breakpad-850-r1.zip" b0061a854df1a0d285edc74c5ac37c42)
-SetupDownloadUrl(CEF "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/cef-291.tar.gz" 97e925e33f2d48cd50172247dbe40f30)
-SetupDownloadUrl(CHROMIUM "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/chromium-15.0.876.0.tar.bz2" 22c8e1db4d1c4b474c600dffbb5fdd0c)
+SetupDownloadUrl(BREAKPAD "breakpad-850-r1.zip" b0061a854df1a0d285edc74c5ac37c42)
+SetupDownloadUrl(CEF "cef-291.tar.gz" 97e925e33f2d48cd50172247dbe40f30)
+SetupDownloadUrl(CHROMIUM "chromium-15.0.876.0.tar.bz2" 22c8e1db4d1c4b474c600dffbb5fdd0c)
 
 if(WIN32 OR NOT CURL_FOUND)
-  SetupDownloadUrl(CURL "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/curl-7.32.0.tar.bz2" 30d04b0a8c43c6770039d1bf033dfe79)
+  SetupDownloadUrl(CURL "curl-7.32.0.tar.bz2" 30d04b0a8c43c6770039d1bf033dfe79)
 endif()
 
-SetupDownloadUrl(DEPOT_TOOLS "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/depot_tools-r1.zip" a27266b8d2388c4dc51645d1159dd0de)
-SetupDownloadUrl(WXWIDGET "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/wxWidgets-2.9.3.tar.bz2" 6b6003713289ea4d3cd9b49c5db5b721)
-SetupDownloadUrl(V8 "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/v8-3.18.5.14.tar.bz2" 657802ea63c89190fd510ee1a2a719bf)
+SetupDownloadUrl(DEPOT_TOOLS "depot_tools-r1.zip" a27266b8d2388c4dc51645d1159dd0de)
+SetupDownloadUrl(WXWIDGET "wxWidgets-2.9.3.tar.bz2" 6b6003713289ea4d3cd9b49c5db5b721)
+SetupDownloadUrl(V8 "v8-3.18.5.14.tar.bz2" 657802ea63c89190fd510ee1a2a719bf)
 
-SetupDownloadUrl(CEF_RES "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/webkit_resources_93824.zip" 41b6690ec3263142c7d61133cb5f1cd2)
+SetupDownloadUrl(CEF_RES "webkit_resources_93824.zip" 41b6690ec3263142c7d61133cb5f1cd2)
 ###############################################################################
 # build some externel projects
 ###############################################################################
