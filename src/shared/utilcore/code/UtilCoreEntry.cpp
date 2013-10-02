@@ -79,7 +79,7 @@ public:
 		wxSetInstance(hInst);
 		wxApp::m_nCmdShow = CmdShow;
 		
-		wxEntryStart(argc, argv);
+		wxEntry(argc, argv);
 
 		if (!wxTheApp || !wxTheApp->CallOnInit())
 			return false;

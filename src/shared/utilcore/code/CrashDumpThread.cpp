@@ -54,11 +54,7 @@ CrashDumpThread::~CrashDumpThread()
 
 bool CrashDumpThread::loadCrashReporter()
 {
-#ifdef DEBUG
-	if (!sol.load("crashuploader-d.dll"))
-#else
 	if (!sol.load("crashuploader.dll"))
-#endif
 		return false;
 
 	uploadCrash = sol.getFunction<UploadCrashFn>("UploadCrash");

@@ -25,12 +25,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 //void LogMsg(int type, std::string msg, Color* col);
 //void LogMsg(int type, std::wstring msg, Color* col);
 
+static void LogMsgLocal(const char* szMsg)
+{
+	OutputDebugStringA(szMsg);
+}
+
+static void LogMsgLocal(const wchar_t* szMsg)
+{
+	OutputDebugStringW(szMsg);
+}
+
 void DESURA_Msg(const char* msg, Color *col = NULL)
 {
 	if (!msg)
 		return;
 
-	LogMsg(MT_MSG, msg, col);
+	LogMsgLocal(msg);
 }
 
 void DESURA_Msg_W(const wchar_t* msg, Color *col = NULL)
@@ -38,7 +48,7 @@ void DESURA_Msg_W(const wchar_t* msg, Color *col = NULL)
 	if (!msg)
 		return;
 
-	LogMsg(MT_MSG, msg, col);
+	LogMsgLocal(msg);
 }
 
 void DESURA_Warn(const char* msg)
@@ -46,7 +56,7 @@ void DESURA_Warn(const char* msg)
 	if (!msg)
 		return;
 
-	LogMsg(MT_WARN, msg, NULL);
+	LogMsgLocal(msg);
 }
 
 void DESURA_Warn_W(const wchar_t* msg)
@@ -54,7 +64,7 @@ void DESURA_Warn_W(const wchar_t* msg)
 	if (!msg)
 		return;
 
-	LogMsg(MT_WARN, msg, NULL);
+	LogMsgLocal(msg);
 }
 
 void DESURA_Debug(const char* msg)
@@ -63,7 +73,7 @@ void DESURA_Debug(const char* msg)
 	if (!msg)
 		return;
 
-	LogMsg(MT_MSG, msg, NULL);
+	LogMsgLocal(msg);
 #endif
 }
 
@@ -73,7 +83,7 @@ void DESURA_Debug_W(const wchar_t* msg)
 	if (!msg)
 		return;
 
-	LogMsg(MT_MSG, msg, NULL);
+	LogMsgLocal(msg);
 #endif
 }
 
