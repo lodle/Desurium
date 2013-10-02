@@ -45,7 +45,7 @@ else()
 endif()
 
 setup_precompiled_header(Common.h ${COMMON_INCLUDE_DIRS}/Common.cpp Sources)
-add_library(utilcore SHARED ${Sources} ${PLATTFORM_SOURCES})
+add_library(utilcore SHARED ${Sources} ${PLATTFORM_SOURCES} ${TOOL_PIPE_SPOURCES})
 target_link_libraries(utilcore
 	managers
 	managers_window
