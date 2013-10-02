@@ -197,7 +197,7 @@ endif()
 ###############################################################################
 
 if (WITH_LOCAL_MIRROR)
-  set(DOWNLOAD_URL "http://localhost/")
+  set(DOWNLOAD_URL "http://localhost/ThirdParty/")
 else()
   set(DOWNLOAD_URL "https://s3-us-west-2.amazonaws.com/lecs.desura.lindenlab.com/")
 endif()
