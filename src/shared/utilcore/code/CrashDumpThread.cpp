@@ -24,13 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 CVar gc_lastusername("gc_lastusername", "");
 
-#ifdef DEBUG
-	const char* g_szDesura = "desura-d.exe";
-	const char* g_szDesuraService = "desura_service.exe";
-#else
-	const char* g_szDesura = "desura.exe";
-	const char* g_szDesuraService = "desura_service.exe";
-#endif
+const char* g_szDesura = "desura.exe";
+const char* g_szDesuraService = "desura_service.exe";
 
 CrashDumpThread::CrashDumpThread() : Thread::BaseThread("CrashDump Thread")
 {

@@ -200,11 +200,7 @@ void SetUninstallRegKey(UninstallInfo &info, uint64 installSize)
 	std::string desuraExe = UTIL::OS::getConfigValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Desura\\DesuraApp\\InstallPath");
 
 #ifdef WIN32
-#ifdef DEBUG
-	desuraExe += "\\desura-d.exe";
-#else
 	desuraExe += "\\desura.exe";
-#endif
 #else
 	desuraExe += "/desura";
 #endif

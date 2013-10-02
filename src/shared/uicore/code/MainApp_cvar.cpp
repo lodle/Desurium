@@ -22,32 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "Managers.h"
 #include "wx_controls/gcMessageBox.h"
 
-#ifdef DEBUG
-
-const wchar_t *modules[] = 
-{
-	L"desura-d.exe",
-	L"desura_service.exe",
-	L"bin\\uicore-d.dll",
-	L"bin\\usercore-d.dll",
-	L"bin\\webcore-d.dll",
-	L"bin\\mcfcore-d.dll",
-	L"bin\\servicecore_c-d.dll",
-};
-
-const char *modulesNames[] = 
-{
-	"desura-d.exe",
-	"desura_service.exe",
-	"uicore-d.dll",
-	"usercore-d.dll",
-	"webcore-d.dll",
-	"mcfcore-d.dll",
-	"servicecore_c-d.dll",
-};
-
-#else
-
 const wchar_t *modules[] = 
 {
 	L"desura.exe",
@@ -69,8 +43,6 @@ const char *modulesNames[] =
 	"mcfcore.dll",
 	"servicecore_c.dll",
 };
-
-#endif
 
 
 CONCOMMAND(cc_test_news, "test_news")

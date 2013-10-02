@@ -66,12 +66,7 @@ typedef gcString (*UserAgentFN)();
 
 void CefIPCPipeClient::startService()
 {
-#ifdef DEBUG
-	const char* exeName = "desura_browserhost-d.exe";
-#else
 	const char* exeName = "desura_browserhost.exe";
-#endif
-
 
 	UserAgentFN userAgent = (UserAgentFN)WebCore::FactoryBuilder(WEBCORE_USERAGENT);
 		

@@ -145,11 +145,7 @@ void UninstallForm::onButtonClicked(wxCommandEvent &event)
 	}
 	else if (m_butRepair->GetId() == event.GetId())
 	{
-#ifdef DEBUG
-		UTIL::WIN::launchExe("desura-d.exe", "-forceupdate");
-#else
 		UTIL::WIN::launchExe("desura.exe", "-forceupdate");
-#endif
 
 		SetExitCode(-1);
 		GetParent()->Close();

@@ -104,11 +104,7 @@ void ToolIPCPipeClient::tryStart()
 
 void ToolIPCPipeClient::startHelper()
 {
-#ifdef DEBUG
-	char launchArg[255] = "toolhelper-d.exe";
-#else
 	char launchArg[255] = "toolhelper.exe";
-#endif
 
 	SHELLEXECUTEINFO info;
 	memset(&info, 0, sizeof(SHELLEXECUTEINFO));
