@@ -29,7 +29,7 @@ NewAccountDialog::NewAccountDialog(wxWindow* parent) : gcDialog( parent, wxID_AN
 
 	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &NewAccountDialog::onButtonClicked, this);
 
-	m_pBrowser = new gcMiscWebControl(this, "http://www.desura.com/app/terms", "TermsOfService");
+	m_pBrowser = new gcMiscWebControl(this, "http://lindenlab.com/tos", "TermsOfService");
 	m_pBrowser->onPageLoadEvent += delegate(this, &NewAccountDialog::onPageLoad);
 
 	m_butBack = new gcButton( this, wxID_ANY, Managers::GetString(L"#BACK"), wxDefaultPosition, wxDefaultSize, 0 );
