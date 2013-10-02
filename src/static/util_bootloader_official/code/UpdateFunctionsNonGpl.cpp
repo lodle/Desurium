@@ -23,6 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "UpdateFunctions.h"
 #include "umcf/UMcf.h"
 
+extern void SetRegValues();
+extern void InstallService();
+
 INT_PTR DisplayUpdateWindow(int updateType);
 
 bool CheckCert()
