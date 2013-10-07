@@ -841,6 +841,7 @@ void LoginForm::onLogin()
 	if (m_comboProvider)
 		gc_login_stage_last.setValue(m_comboProvider->GetStringSelection());
 
+	SaveCVars();
 	Show(false);
 
 	MainApp* temp = dynamic_cast<MainApp*>(GetParent());
