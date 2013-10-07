@@ -28,8 +28,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 using namespace testing;
 
+#ifdef DEBUG
 CVar g_bAssertOnFailure("unittest_assertonfailure", "true");
 CVar g_bRunOnStartup("unittest_runonstartup", "true");
+#else
+CVar g_bAssertOnFailure("unittest_assertonfailure", "false");
+CVar g_bRunOnStartup("unittest_runonstartup", "false");
+#endif
+
 CVar g_strUnitTestFilter("unittest_filter", "*");
 
 class gcUnitTestWatcher : public EmptyTestEventListener
