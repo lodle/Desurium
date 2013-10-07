@@ -121,7 +121,8 @@ file(GLOB Sources       code/AboutForm.cpp
                         code/UploadPrompt.cpp
                         code/UsernameBox.cpp
                         code/*.h
-						code/gcUnitTestPage.cpp)
+						code/gcUnitTestPage.cpp
+						code/AltLoginDialog.cpp)
 
 if(WIN32)
   file(GLOB PlattformSources

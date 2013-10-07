@@ -130,9 +130,12 @@ public:
 	virtual EventV* getLoginEvent();
 
 
-	virtual void newAccountLogin(const char* username, const char* cookie);
+	void newAccountLogin(const char* username, const char* cookie) override;
+	void newAccountLoginError(const char* szErrorMessage) override;
 
 	void showUnitTest();
+
+	const char* getProvider() const override;
 
 protected:
 	void showLogin(bool skipAutoLogin = false);
@@ -174,6 +177,8 @@ protected:
 
 	void showConsole();
 
+	void setProvider(const char* szProvider) override;
+
 	Event<std::pair<bool,bool>> onLoginAcceptedEvent;
 	EventV onLoginEvent;
 
@@ -194,6 +199,7 @@ private:
 	bool m_bLoggedIn;
 	uint8 m_iMode;
 
+	gcString m_strServiceProvider;
 	gcString m_szDesuraCache;
 
 #ifdef WITH_GTEST

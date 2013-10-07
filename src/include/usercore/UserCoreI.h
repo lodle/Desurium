@@ -445,6 +445,9 @@ public:
 
 	//! Logs in with out starting all the extra stuff
 	virtual void logInTool(const char* user, const char* pass)=0;
+
+
+	virtual void init(const char* appDataPath, const char* szProviderUrl)=0;
 };
 
 
