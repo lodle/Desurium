@@ -880,6 +880,10 @@ void LoginForm::onLoginError(gcException &e)
 	m_linkLostPassword->Enable();
 
 	m_bAutoLogin = false;
+
+	wxFocusEvent ex;
+	ex.SetId(m_tbPassword->GetId());
+	onBlur(ex);
 }
 
 void LoginForm::onChar(wxKeyEvent& event)
@@ -1011,7 +1015,7 @@ void LoginForm::newAccountLoginError(const char* szErrorMessage)
 		m_pNewAccount->EndModal(0);
 
 	gcException e(ERR_INVALID, szErrorMessage);
-	onLoginError(e);
+	onLoginErrorEvent(e);
 }
 
 void LoginForm::onAltLoginClick(wxCommandEvent& event)
