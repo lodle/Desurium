@@ -30,7 +30,7 @@ INT_PTR DisplayUpdateWindow(int updateType);
 
 bool CheckCert()
 {
-#ifndef DESURA_OFFICAL_BUILD
+#ifndef DESURA_OFFICIAL_BUILD
 	return false;
 #endif
 

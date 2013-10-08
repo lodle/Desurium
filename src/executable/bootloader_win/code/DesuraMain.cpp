@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "DesuraWinApp.h"
 #include "UtilBootloader.h"
 
-#ifdef DESURA_OFFICAL_BUILD
+#ifdef DESURA_OFFICIAL_BUILD
 	#include "AppUpdateInstall.h"
 	
 	extern UINT DownloadFilesForTest();
@@ -186,7 +186,7 @@ void BootLoader::InitInstance()
 
 bool BootLoader::preLaunchCheck(BootLoaderUtil::CMDArgs &args)
 {
-#ifdef DESURA_OFFICAL_BUILD
+#ifdef DESURA_OFFICIAL_BUILD
 	CheckForBadUninstaller();
 #endif
 
@@ -201,7 +201,7 @@ bool BootLoader::preLaunchCheck(BootLoaderUtil::CMDArgs &args)
 		return false;
 	}
 
-#ifdef DESURA_OFFICAL_BUILD
+#ifdef DESURA_OFFICIAL_BUILD
 	if (args.hasArg("testinstall"))
 	{
 		m_bRetCode = true;
@@ -231,7 +231,7 @@ bool BootLoader::preLaunchCheck(BootLoaderUtil::CMDArgs &args)
 		return false;
 	}
 
-#ifdef DESURA_OFFICAL_BUILD
+#ifdef DESURA_OFFICIAL_BUILD
 #ifdef DEBUG
 	if (args.hasArg("debugupdater"))
 	{
@@ -310,7 +310,7 @@ bool BootLoader::preLaunchCheck(BootLoaderUtil::CMDArgs &args)
 		}
 	}
 
-#ifdef DESURA_OFFICAL_BUILD
+#ifdef DESURA_OFFICIAL_BUILD
 	if (args.hasArg("forceupdate"))
 	{
 		if (!m_bHasAdminRights)

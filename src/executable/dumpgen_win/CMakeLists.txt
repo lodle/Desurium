@@ -10,12 +10,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/RES/dumpgen.rc ${RC_DIR}/dumpgen.rc @
 file(GLOB Sources code/*.cpp ${RC_DIR}/dumpgen.rc)
 
 add_definitions(-D_WINDOWS -DDONTUSE_PCH)
-
 add_executable(dumpgen WIN32 ${Sources})
-
-if (OFFICIAL_BUILD)
-	add_definitions(-DDESURA_OFFICAL_BUILD)
-endif()
 
 target_link_libraries(dumpgen
   util_bootloader_s
