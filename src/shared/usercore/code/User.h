@@ -177,6 +177,8 @@ public:
 
 	virtual void runInstallScript(const char* file, const char* installPath, const char* function);
 
+	bool isAltProvider();
+
 	//! Parses news xml
 	//!
 	//! @param newsNode News xml
@@ -328,6 +330,8 @@ private:
 #ifdef WIN32
 	HWND m_WinHandle;
 #endif
+
+	bool m_bAltProvider;
 
 	friend class ItemManager;
 };
@@ -539,6 +543,11 @@ inline HWND User::getMainWindowHandle()
 inline BDManager* User::getBDManager()
 {
 	return m_pBannerDownloadManager;
+}
+
+inline bool User::isAltProvider()
+{
+	return m_bAltProvider;
 }
 
 }
