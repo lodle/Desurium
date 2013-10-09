@@ -101,12 +101,12 @@ public:
 	{
 		m_pUser = user;
 	}
-	
+
 	void run()
 	{
-		safe_delete(m_pUser);	
+		safe_delete(m_pUser);
 	}
-	
+
 	UserCore::UserI* m_pUser;
 };
 
@@ -123,7 +123,7 @@ public:
 
 AutoDelDeleteThread addt;
 
-const char* g_szSafeList[] = 
+const char* g_szSafeList[] =
 {
 	".desura.com",
 	"desura.com",
@@ -138,7 +138,7 @@ const char* g_szSafeList[] =
 
 static bool isSafeUrl(const wxString &server, const wxString &safeUrl)
 {
-	if (safeUrl.size()==0)
+	if (safeUrl.size() == 0)
 		return false;
 
 	if (safeUrl[0] == '.')
@@ -147,7 +147,7 @@ static bool isSafeUrl(const wxString &server, const wxString &safeUrl)
 	return server == safeUrl;
 }
 
-static bool isSafeUrl(const char* url, MainAppI* pMainApp)
+static bool isSafeUrl(const char* url, MainAppProviderI* pMainApp)
 {
 	if (!url)
 		return false;
@@ -162,7 +162,7 @@ static bool isSafeUrl(const char* url, MainAppI* pMainApp)
 
 	wxString server = wxurl.GetServer();
 
-	size_t x=0;
+	size_t x = 0;
 
 	while (g_szSafeList[x])
 	{
@@ -171,7 +171,7 @@ static bool isSafeUrl(const char* url, MainAppI* pMainApp)
 
 		x++;
 	}
-	
+
 	if (pMainApp && pMainApp->getProvider())
 	{
 		wxString cusProvider(pMainApp->getProvider());
@@ -188,7 +188,7 @@ static bool isSafeUrl(const char* url, MainAppI* pMainApp)
 
 bool isSafeUrl(const char* url)
 {
-	return isSafeUrl(url, g_pMainApp);
+	return isSafeUrl(url, dynamic_cast<MainAppProviderI*>(g_pMainApp));
 }
 
 extern CVar gc_autostart;
@@ -198,7 +198,7 @@ wxWindow* GetMainWindow(wxWindow* p)
 {
 	if (!p || p == g_pMainApp)
 		return g_pMainApp->getTopLevelWindow();
-	
+
 	return p;
 }
 
@@ -209,7 +209,7 @@ MainApp::MainApp()
 	m_wxLoginForm = NULL;
 	m_wxTBIcon = NULL;
 	m_wxMainForm = NULL;
-	
+
 	m_bQuiteMode = false;
 	m_bLoggedIn = false;
 	m_iMode = MODE_LOGOUT;
@@ -252,13 +252,13 @@ MainApp::~MainApp()
 	//delete user first so threads will not die when they try to access webcore
 	//should be deleted on logout but just to make sure
 	Thread::AutoLock a(m_UserLock);
-	
+
 	if (m_wxTBIcon)
 		m_wxTBIcon->deregEvents();
 
 	safe_delete(g_pDeleteThread);
 	g_pDeleteThread = new DeleteUserThread(g_pUserHandle);
-	
+
 #ifdef NIX
 	g_pDeleteThread->start();
 #else
@@ -270,7 +270,7 @@ MainApp::~MainApp()
 	safe_delete(m_wxTBIcon);
 
 	DestroyManagers();
-	DestroyLogging();	
+	DestroyLogging();
 }
 
 gcFrame* MainApp::getMainWindow()
@@ -290,7 +290,7 @@ void MainApp::Init(int argc, wxCmdLineArgsArray &argv)
 {
 	if (argc > 0)
 	{
-		for (int x=0; x<argc; x++)
+		for (int x = 0; x < argc; x++)
 		{
 			wxString str = argv[x].MakeLower();
 
@@ -317,7 +317,7 @@ void MainApp::Init(int argc, wxCmdLineArgsArray &argv)
 	InitLocalManagers();
 
 	std::string val = UTIL::OS::getConfigValue(REGRUN);
-	gc_autostart.setValue( val.size() > 0 );
+	gc_autostart.setValue(val.size() > 0);
 
 	//because logging gets init first we need to man reg it
 	RegLogWithWindow();
@@ -417,10 +417,10 @@ void MainApp::logOut(bool bShowLogin, bool autoLogin)
 
 			user->logOut(!autoLogin);
 
-			*user->getAppUpdateProgEvent()				-= guiDelegate(this, &MainApp::onAppUpdateProg);
-			*user->getAppUpdateCompleteEvent()			-= guiDelegate(this, &MainApp::onAppUpdate);
+			*user->getAppUpdateProgEvent() -= guiDelegate(this, &MainApp::onAppUpdateProg);
+			*user->getAppUpdateCompleteEvent() -= guiDelegate(this, &MainApp::onAppUpdate);
 			*user->getWebCore()->getCookieUpdateEvent() -= guiDelegate(this, &MainApp::onCookieUpdate);
-			*user->getPipeDisconnectEvent()				-= guiDelegate(this, &MainApp::onPipeDisconnect);
+			*user->getPipeDisconnectEvent() -= guiDelegate(this, &MainApp::onPipeDisconnect);
 
 			safe_delete(user);
 		}
@@ -566,11 +566,11 @@ EventV* MainApp::getLoginEvent()
 
 void MainApp::onLoginAccepted(bool saveLoginInfo, bool autologin)
 {
-	std::pair<bool,bool> res(saveLoginInfo, autologin);
+	std::pair<bool, bool> res(saveLoginInfo, autologin);
 	onLoginAcceptedEvent(res);
 }
 
-void MainApp::onLoginAcceptedCB(std::pair<bool,bool> &loginInfo)
+void MainApp::onLoginAcceptedCB(std::pair<bool, bool> &loginInfo)
 {
 	bool saveLoginInfo = loginInfo.first;
 	bool autologin = loginInfo.second;
@@ -589,14 +589,14 @@ void MainApp::onLoginAcceptedCB(std::pair<bool,bool> &loginInfo)
 	*GetUserCore()->getAppUpdateCompleteEvent() += guiDelegate(this, &MainApp::onAppUpdate);
 	*GetWebCore()->getCookieUpdateEvent() += guiDelegate(this, &MainApp::onCookieUpdate);
 	*GetUserCore()->getPipeDisconnectEvent() += guiDelegate(this, &MainApp::onPipeDisconnect);
-	
+
 	//trigger this so it sets cookies first time around
 	onCookieUpdate();
 
 
 	admin_developer.setValue(GetUserCore()->isAdmin());
 	GetCVarManager()->loadUser(GetUserCore()->getUserId());
-	
+
 	gcWString userName(GetUserCore()->getUserName());
 	SetCrashDumpSettings(userName.c_str(), gc_uploaddumps.getBool());
 
@@ -637,7 +637,7 @@ void MainApp::toggleCurrentForm()
 {
 	if (!m_wxMainForm && !m_wxLoginForm)
 		return;
-		
+
 	if (m_wxMainForm)
 	{
 		if (m_wxMainForm->IsShown())
@@ -728,7 +728,7 @@ void MainApp::onNewsUpdate(std::vector<UserCore::Misc::NewsItem*>& itemList)
 {
 	m_NewsLock.lock();
 
-	for (size_t x=0; x<itemList.size(); x++)
+	for (size_t x = 0; x < itemList.size(); x++)
 	{
 		if (!itemList[x])
 			continue;
@@ -754,7 +754,7 @@ void MainApp::onGiftUpdate(std::vector<UserCore::Misc::NewsItem*>& itemList)
 	oldList = m_vGiftItems;
 	m_vGiftItems.clear();
 
-	for (size_t x=0; x<itemList.size(); x++)
+	for (size_t x = 0; x < itemList.size(); x++)
 	{
 		if (!itemList[x])
 			continue;
@@ -762,11 +762,11 @@ void MainApp::onGiftUpdate(std::vector<UserCore::Misc::NewsItem*>& itemList)
 		m_vGiftItems.push_back(new UserCore::Misc::NewsItem(itemList[x]));
 	}
 
-	size_t count =0;
+	size_t count = 0;
 
-	for (size_t x=0; x<itemList.size(); x++)
+	for (size_t x = 0; x < itemList.size(); x++)
 	{
-		for (size_t y=0; y<oldList.size(); y++)
+		for (size_t y = 0; y < oldList.size(); y++)
 		{
 			if (oldList[y]->id == itemList[x]->id)
 			{
@@ -845,46 +845,9 @@ const char* MainApp::getProvider() const
 
 namespace UnitTest
 {
-	class StubMainApp : public MainAppI
+	class StubMainAppProvider : public MainAppProviderI
 	{
 	public:
-		void showPage(PAGE page){}
-		void showNews(){}
-		void showPlay(){}
-		void showMainWindow(bool raise = false){}
-
-		void handleInternalLink(const char* link){}
-		void handleInternalLink(DesuraId id, uint8 action, std::vector<std::string> args = std::vector<std::string>()){}
-
-		//this closes and destroys a sub form
-		void closeForm(int32 id){}
-
-		void logIn(const char* user, const char* pass){}
-		void logOut(bool bShowLogin = true, bool autoLogin = false){}
-		void onLoginAccepted(bool saveLoginInfo = false, bool autologin = false){}
-
-		bool isOffline(){ return false; }
-		bool isLoggedIn(){ return false; }
-
-		void processWildCards(WCSpecialInfo &info, wxWindow* parent = NULL){}
-
-		void loadUrl(const char* url, PAGE page){}
-
-		gcFrame* getMainWindow(){return NULL;}
-
-		void disableQuietMode(){}
-		bool isQuietMode(){return false;}
-
-		bool Destroy(){ return false; }
-
-		EventV* getLoginEvent(){ return NULL; }
-
-		wxWindow* getTopLevelWindow(){ return NULL; }
-
-		void newAccountLogin(const char* username, const char* cookie){}
-
-		void showUnitTest(){}
-
 		//Changes the server url provider. Set to null to reset
 		void setProvider(const char* szProvider)
 		{
@@ -895,8 +858,6 @@ namespace UnitTest
 		{
 			return m_szProvider;
 		}
-
-		void newAccountLoginError(const char* szErrorMessage){}
 
 		const char* m_szProvider;
 	};
@@ -926,7 +887,7 @@ namespace UnitTest
 
 	TEST(MainApp, SafeUrlStaging)
 	{
-		StubMainApp a;
+		StubMainAppProvider a;
 		a.setProvider("desura.blah.com");
 
 		ASSERT_TRUE(isSafeUrl("http://desura.blah.com", &a));
