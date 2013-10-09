@@ -164,7 +164,13 @@ void FullUpdate()
 	std::wstring updateFile = UTIL::OS::getAppDataPath(UPDATEFILE_W);
 	DeleteFileW(updateFile.c_str());
 
-	if (DisplayUpdateWindow(UPDATE_FILES) == 2)
+	int nRes = DisplayUpdateWindow(UPDATE_FILES);
+	
+	//Critical failure
+	if (nRes == -1)
+		exit(0);
+	
+	if (nRes == 2)
 		exit(0);
 
 #ifndef DEBUG
@@ -187,7 +193,11 @@ void FullUpdate()
 
 void McfUpdate()
 {
-	DisplayUpdateWindow(UPDATE_MCF);
+	int nRes = DisplayUpdateWindow(UPDATE_MCF);
+	
+	//Critical failure
+	if (nRes == -1)
+		exit(0);
 }
 
 

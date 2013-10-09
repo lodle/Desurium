@@ -17,7 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
 #include "DesuraWnd.h"
-
+#include <branding/branding.h>
+#include <stdio.h>
 
 using namespace Desurium;
 
@@ -144,7 +145,7 @@ CSize CDC::GetOutputTextExtent(const char* szText, int nSize)
 bool CDC::TextOut(int x, int y, const char* szText, int nSize)
 {
 	assert(m_hDC);
-	return ::TextOut(m_hDC, x, y, szText, nSize);
+	return !!::TextOut(m_hDC, x, y, szText, nSize);
 }
 
 
@@ -204,7 +205,7 @@ HCURSOR CDesuraWnd::LoadStandardCursor(const char* szResourceId)
 
 bool CDesuraWnd::RegisterClass(WNDCLASS *pClass)
 {
-	return ::RegisterClass(pClass);
+	return !!::RegisterClass(pClass);
 }
 
 HINSTANCE CDesuraWnd::gs_hInstance = NULL;
@@ -273,6 +274,13 @@ INT_PTR CDesuraDialog::DoModal()
 	INT_PTR nRes = ::DialogBoxParam(GetInstanceHandle(), MAKEINTRESOURCE(m_nResourceId), NULL, &CDesuraDialog::WinProc, (LPARAM)SW_SHOW);
 
 	DWORD err = GetLastError();
+
+	if (nRes == -1 && err != 0)
+	{
+		char msg[255];
+		_snprintf_s(msg, 255, _TRUNCATE, "Failed to show dialog %d", err);
+		::MessageBox(NULL, msg, PRODUCT_NAME " Critical Error", MB_OK);
+	}
 
 	return nRes;
 }
