@@ -179,7 +179,7 @@ public:
 	//! @param statusOveride New status flags to add when load is complete
 	//! @param pWildCard Wildcard manager to resolve wildcards from
 	//!
-	void loadXmlData(uint32 platform, tinyxml2::XMLNode *xmlNode, uint16 statusOveride, WildcardManager* pWildCard=NULL, bool reset = false);
+	void loadXmlData(uint32 platform, tinyxml2::XMLNode *xmlNode, uint16 statusOveride, WildcardManager* pWildCard = NULL, bool reset = false, sqlite3x::sqlite3_connection *pDb = NULL);
 
 
 	//! hash for base manager
