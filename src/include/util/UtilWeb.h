@@ -179,17 +179,22 @@ public:
 		return m_pWC;
 	}
 
-	void operator=(HttpHandle &handle)
+	HttpHandle& operator=(const HttpHandle &handle)
 	{
+		if (this == &handle)
+			return *this;
+
 		if (m_pWC)
 			m_pWC->del();
 
 		m_pWC = handle.m_pWC;
 		handle.m_pWC = NULL;
+
+		return *this;
 	}
 
 private:
-	HttpHandleI* m_pWC;
+	mutable HttpHandleI* m_pWC;
 };
 
 
