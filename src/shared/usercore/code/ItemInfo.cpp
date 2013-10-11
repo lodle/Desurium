@@ -460,7 +460,7 @@ void ItemInfo::loadBranchXmlData(tinyxml2::XMLElement* branch)
 	}
 }
 
-void ItemInfo::loadXmlData(uint32 platform, tinyxml2::XMLNode *xmlNode, uint16 statusOveride, WildcardManager* pWildCard, bool reset, sqlite3x::sqlite3_connection *pDb)
+void ItemInfo::loadXmlData(uint32 platform, tinyxml2::XMLNode *xmlNode, uint16 statusOveride, WildcardManager* pWildCard, bool reset)
 {
 	if (!xmlNode)
 		throw gcException(ERR_BADXML);
@@ -575,7 +575,9 @@ void ItemInfo::loadXmlData(uint32 platform, tinyxml2::XMLNode *xmlNode, uint16 s
 
 	try
 	{
-		saveDbFull(pDb);
+		gcString szItemDb = getItemInfoDb(getUserCore()->getAppDataPath());
+		sqlite3x::sqlite3_connection db(szItemDb.c_str());
+		saveDbFull(&db);
 	}
 	catch (std::exception &e)
 	{

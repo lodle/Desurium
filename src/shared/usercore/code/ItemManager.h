@@ -32,11 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 class InfoMaps;
 
-namespace sqlite3x
-{
-	class sqlite3_connection;
-}
-
 namespace UserCore
 {
 
@@ -209,8 +204,6 @@ private:
 
 	::Thread::Mutex m_FavLock;
 	std::vector<DesuraId> m_vFavList;
-
-	sqlite3x::sqlite3_connection *m_pCurDb;
 };
 
 
