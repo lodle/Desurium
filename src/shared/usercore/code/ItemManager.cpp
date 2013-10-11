@@ -59,7 +59,9 @@ namespace UserCore
 {
 
 
-ItemManager::ItemManager(User* user) : BaseManager(true)
+ItemManager::ItemManager(User* user) 
+	: BaseManager(true)
+	, m_pCurDb(NULL)
 {
 	m_pUser = user;
 	m_bEnableSave = false;
@@ -969,15 +971,17 @@ void ItemManager::generateInfoMaps(tinyxml2::XMLElement* gamesNode, InfoMaps* ma
 
 UserCore::Item::ItemInfo* ItemManager::createNewItem(DesuraId pid, DesuraId id, ParseInfo& pi)
 {
+	assert(m_pCurDb);
+
 	UserCore::Item::ItemInfo* temp = new UserCore::Item::ItemInfo(m_pUser, id, pid);
 	UserCore::Item::ItemHandle* handle = new UserCore::Item::ItemHandle(temp, m_pUser);
 
 	try
 	{
 		if (pi.infoNode)
-			temp->loadXmlData(pi.platform, pi.infoNode, pi.statusOverride, pi.pWildCard, pi.reset);
+			temp->loadXmlData(pi.platform, pi.infoNode, pi.statusOverride, pi.pWildCard, pi.reset, m_pCurDb);
 
-		temp->loadXmlData(pi.platform, pi.rootNode, pi.statusOverride, pi.pWildCard, pi.reset);
+		temp->loadXmlData(pi.platform, pi.rootNode, pi.statusOverride, pi.pWildCard, pi.reset, m_pCurDb);
 		m_pUser->getToolManager()->findJSTools(temp);
 
 		addItem(id.toInt64(), handle);
@@ -996,12 +1000,14 @@ UserCore::Item::ItemInfo* ItemManager::createNewItem(DesuraId pid, DesuraId id, 
 
 void ItemManager::updateItem(UserCore::Item::ItemInfo* itemInfo, ParseInfo& pi)
 {
+	assert(m_pCurDb);
+
 	uint32 newSO = pi.statusOverride&~(UM::ItemInfoI::STATUS_DELETED);
 
 	if (pi.infoNode)
-		itemInfo->loadXmlData(pi.platform, pi.infoNode, newSO, pi.pWildCard, pi.reset);
+		itemInfo->loadXmlData(pi.platform, pi.infoNode, newSO, pi.pWildCard, pi.reset, m_pCurDb);
 
-	itemInfo->loadXmlData(pi.platform, pi.rootNode, newSO, pi.pWildCard, pi.reset);
+	itemInfo->loadXmlData(pi.platform, pi.rootNode, newSO, pi.pWildCard, pi.reset, m_pCurDb);
 	itemInfo->processUpdateXml(pi.rootNode);
 
 	itemInfo->delSFlag(UM::ItemInfoI::STATUS_STUB);
@@ -1046,6 +1052,14 @@ void ItemManager::parseLoginXml2(tinyxml2::XMLElement* gamesNode, tinyxml2::XMLE
 
 	try
 	{
+		gcString szItemDb = getItemInfoDb(m_pUser->getAppDataPath());
+		sqlite3x::sqlite3_connection db(szItemDb.c_str());
+
+		sqlite3x::sqlite3_transaction trans(db);
+
+		assert(!m_pCurDb);
+		m_pCurDb = &db;
+
 		XML::for_each_child("platform", platformNodes, [this, &pi](tinyxml2::XMLElement* platform)
 		{
 			XML::GetAtt("id", pi.platform, platform);
@@ -1056,10 +1070,18 @@ void ItemManager::parseLoginXml2(tinyxml2::XMLElement* gamesNode, tinyxml2::XMLE
 
 			parseKnownBranches(platform->FirstChildElement("games"));
 		});
+
+		m_pCurDb = NULL;
+
+		trans.commit();
 	}
 	catch (boost::thread_interrupted)
 	{
 		// do we have to do something here?
+	}
+	catch (std::exception &e)
+	{
+		Warning(gcString("Failed to load item data from xml feed: {0}", e.what()));
 	}
 
 	processLeftOvers(maps, false);
