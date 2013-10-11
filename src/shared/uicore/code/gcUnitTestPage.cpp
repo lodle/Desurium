@@ -111,8 +111,10 @@ static gcUnitTestWatcher* SetupTestWatcher()
 	TestEventListeners& listeners = UnitTest::GetInstance()->listeners();
 	listeners.Append(pWatcher);
 	
-	int argc = wxTheApp->argc;
-	InitGoogleTest(&argc, const_cast<char**>(wxTheApp->argv.operator char**()));
+	BootLoaderUtil::CMDArgs args(GetCommandLineA());
+
+	int argc = args.getArgc();
+	InitGoogleTest(&argc, const_cast<char**>(args.getArgv()));
 
 	return pWatcher;
 }
