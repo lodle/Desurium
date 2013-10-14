@@ -1,34 +1,33 @@
 // CrashAleart.cpp : implementation file
 //
 
-#include "stdafx.h"
 #include "CrashAlert.h"
 
-BEGIN_MESSAGE_MAP(CrashAlert, CDialog)
-	ON_BN_CLICKED(IDYES, &CrashAlert::OnBnClickedYes)
-END_MESSAGE_MAP()
+using namespace Desurium;
+
 
 // CrashAleart
-CrashAlert::CrashAlert()  : CDialog(IDD_DIALOG1, NULL)
+CrashAlert::CrashAlert()
+	: CDesuraDialog(IDD_DIALOG1)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON1);
+	m_hIcon = LoadIcon(IDI_ICON1);
 }
 
 CrashAlert::~CrashAlert()
 {
 }
 
-BOOL CrashAlert::OnInitDialog()
+bool CrashAlert::OnInitDialog()
 {
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	return CDialog::OnInitDialog();
+	return true;
 }
 
-void CrashAlert::OnBnClickedYes()
+void CrashAlert::OnCommand(HWND hWnd, int nId)
 {
-	EndDialog(IDYES);
+	EndDialog(nId);
 }

@@ -16,6 +16,7 @@ target_link_libraries(dumpgen
   util_bootloader_s
   util_s
   mdump_s
+  comctl32
   ${OFFICIAL_DEP}
 )
 SetStaticRuntime(dumpgen)

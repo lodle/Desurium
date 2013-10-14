@@ -16,24 +16,25 @@
 #endif
 
 #include "Resource.h"
+#include "DesuraWnd.h"
 
 // CrashAlert frame
 
-class CrashAlert : public CDialog
+class CrashAlert : public Desurium::CDesuraDialog
 {
 public:
-	CrashAlert();           // protected constructor used by dynamic creation
+	CrashAlert();
 	virtual ~CrashAlert();
 
 protected:
-	virtual BOOL OnInitDialog();
+	void OnCommand(HWND hWnd, int nId) override;
+	bool OnInitDialog() override;
 
 private:
-
 	HICON m_hIcon;
-	DECLARE_MESSAGE_MAP()
+
 public:
-	afx_msg void OnBnClickedYes();
+	void OnBnClickedYes();
 };
 
 #endif //DESURA_CRASHALERT_H

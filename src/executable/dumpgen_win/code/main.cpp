@@ -9,8 +9,6 @@
 //   Created By: Mark Chandler <mailto:mark@moddb.com>
 /////////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-
 #include "Common.h"
 
 #include "windows.h"
@@ -58,9 +56,7 @@ BootLoader theApp;
 
 BootLoader::BootLoader()
 {
-	AfxEnableMemoryTracking(FALSE);
-
-	InitCommonControls();
+	BootLoaderUtil::InitCommonControls();
 
 #if 0
 	WaitForDebugger();

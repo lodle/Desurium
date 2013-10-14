@@ -8,10 +8,6 @@
 //   Created On: 9/24/2010 7:11:54 PM
 //   Created By:  <mailto:>
 ////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
-#include "stdafx.h"
-#endif
-
 #include "Common.h"
 
 #include <string.h>
@@ -28,7 +24,11 @@
 #include <Psapi.h>
 #endif
 
-UINT UploadDump(void* dumpInfo);
+#include "DesuraWnd.h"
+
+using namespace Desurium;
+
+UINT __stdcall UploadDump(void* dumpInfo);
 
 bool RestartDesura(const char* args);
 void GetBuildBranch(int &build, int &branch);
@@ -114,7 +114,7 @@ void ProcessDump(const char* m_lpCmdLine)
 	if (file[0] && upload)
 	{
 		DumpInfo *di = new DumpInfo(file, user, uploadComplete);
-		AfxBeginThread(UploadDump, (void*)di);
+		CDesuraWnd::BeginThread(&UploadDump, (void*)di);
 	}
 	else
 	{
@@ -142,7 +142,7 @@ void ProcessDump(const char* m_lpCmdLine)
 		Sleep(500);
 }
 
-UINT UploadDump(void* dumpInfo)
+UINT __stdcall UploadDump(void* dumpInfo)
 {
 	int build = 0;
 	int branch = 0;
