@@ -111,7 +111,15 @@ static gcUnitTestWatcher* SetupTestWatcher()
 	TestEventListeners& listeners = UnitTest::GetInstance()->listeners();
 	listeners.Append(pWatcher);
 	
+#ifdef WIN32
 	BootLoaderUtil::CMDArgs args(GetCommandLineA());
+#else
+	char* szCmdLine = NULL;
+	UTIL::FS::readWholeFile("/proc/self/cmdline", &szCmdLine);
+
+	BootLoaderUtil::CMDArgs args(szCmdLine);
+	safe_delete(szCmdLine);
+#endif
 
 	int argc = args.getArgc();
 	InitGoogleTest(&argc, const_cast<char**>(args.getArgv()));
