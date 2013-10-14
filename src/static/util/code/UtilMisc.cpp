@@ -772,7 +772,7 @@ void CMDArgs::getString(const char* name, char* buff, size_t buffSize)
 		return;
 
 	std::string val = m_pInternal->m_mArgv[name];
-	strncpy_s(buff, buffSize, val.c_str(), _TRUNCATE);
+	Safe::strncpy(buff, buffSize, val.c_str(), val.size());
 }
 
 const char** CMDArgs::getArgv()
