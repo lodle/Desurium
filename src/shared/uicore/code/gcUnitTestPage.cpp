@@ -98,6 +98,11 @@ public:
 		GTEST_FLAG(filter) = m_strFilter;
 		RUN_ALL_TESTS();
 		GTEST_FLAG(filter) = NULL;
+
+#ifdef WIN32
+		//Reset this as gtest messes with it :'(
+		_set_error_mode(_OUT_TO_MSGBOX);
+#endif
 	}
 
 	gcString m_strFilter;
