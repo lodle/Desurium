@@ -56,7 +56,7 @@ CDKProgress::CDKProgress(wxWindow* parent, bool launch) : BasePage(parent)
 	this->Layout();
 
 
-	setParentSize(-1, 120);
+	setParentSize(-1, 135);
 	onCompleteEvent += guiDelegate(this, &CDKProgress::onComplete);
 	onErrorEvent += guiDelegate(this, &CDKProgress::onError);
 }

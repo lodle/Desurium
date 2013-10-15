@@ -74,7 +74,7 @@ MWProgressPage::MWProgressPage( wxWindow* parent, wxWindowID id, const wxPoint& 
 	m_bStopped = false;
 	m_bAddToAccount = true;
 
-	this->setParentSize(-1, 120);
+	this->setParentSize(-1, 135);
 	this->Layout();
 
 	gcFrame* par = dynamic_cast<gcFrame*>(GetParent());

@@ -103,7 +103,7 @@ CDKInfo::CDKInfo(wxWindow* parent, const char* exe, bool launch) : BasePage(pare
 	this->SetSizer( fgSizer1 );
 	this->Layout();
 
-	setParentSize(-1, 120);
+	setParentSize(-1, 135);
 	Bind(wxEVT_COMMAND_BUTTON_CLICKED, &CDKInfo::onButtonClicked, this);
 
 	m_uiCurIndex = 0;

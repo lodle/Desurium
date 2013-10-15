@@ -55,7 +55,7 @@ PreloadPage::PreloadPage(wxWindow* parent, const char* action, const char* id) :
 	
 	this->SetSizer( fgSizer1 );
 	this->Layout();
-	this->setParentSize(-1, 120);
+	this->setParentSize(-1, 135);
 }
 
 }

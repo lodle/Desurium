@@ -64,7 +64,7 @@ InstallINPage::InstallINPage(wxWindow* parent) : BaseInstallPage(parent)
 	this->SetSizer( fgSizer1 );
 	this->Layout();
 
-	this->setParentSize(-1, 120);
+	this->setParentSize(-1, 135);
 
 	m_bPaused = false;
 	m_bCompleted = false;
