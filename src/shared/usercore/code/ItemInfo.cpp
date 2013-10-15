@@ -575,7 +575,16 @@ void ItemInfo::loadXmlData(uint32 platform, tinyxml2::XMLNode *xmlNode, uint16 s
 
 	try
 	{
-		saveDbFull(pDb);
+		if (!pDb)
+		{
+			gcString szItemDb = getItemInfoDb(getUserCore()->getAppDataPath());
+			sqlite3x::sqlite3_connection db(szItemDb.c_str());
+			saveDbFull(&db);
+		}
+		else
+		{
+			saveDbFull(pDb);
+		}	
 	}
 	catch (std::exception &e)
 	{

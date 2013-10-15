@@ -971,8 +971,6 @@ void ItemManager::generateInfoMaps(tinyxml2::XMLElement* gamesNode, InfoMaps* ma
 
 UserCore::Item::ItemInfo* ItemManager::createNewItem(DesuraId pid, DesuraId id, ParseInfo& pi)
 {
-	assert(m_pCurDb);
-
 	UserCore::Item::ItemInfo* temp = new UserCore::Item::ItemInfo(m_pUser, id, pid);
 	UserCore::Item::ItemHandle* handle = new UserCore::Item::ItemHandle(temp, m_pUser);
 
@@ -1000,8 +998,6 @@ UserCore::Item::ItemInfo* ItemManager::createNewItem(DesuraId pid, DesuraId id, 
 
 void ItemManager::updateItem(UserCore::Item::ItemInfo* itemInfo, ParseInfo& pi)
 {
-	assert(m_pCurDb);
-
 	uint32 newSO = pi.statusOverride&~(UM::ItemInfoI::STATUS_DELETED);
 
 	if (pi.infoNode)
