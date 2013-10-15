@@ -327,8 +327,6 @@ void UpdateAllUninstallRegKey()
 
 		SetUninstallRegKey(list[x], 0);
 	}
-
-	UTIL::MISC::unloadImgLib();
 #endif
 
 }
