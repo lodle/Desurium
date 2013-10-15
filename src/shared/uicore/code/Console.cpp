@@ -29,6 +29,11 @@ CONCOMMAND(cmdlist, "cmdlist")
 	std::vector<ConCommand*> vList;
 	GetCCommandManager()->getConCommandList(vList);
 	
+	std::sort(vList.begin(), vList.end(), [](ConCommand *pA, ConCommand *pB)
+	{
+		return std::string(pA->getName()) < std::string(pB->getName()); 
+	});
+
 	for (size_t x=0; x<vList.size(); x++)
 	{
 		ConCommand *temp = vList[x];
