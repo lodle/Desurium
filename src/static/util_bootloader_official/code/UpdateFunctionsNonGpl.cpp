@@ -150,7 +150,9 @@ bool CheckUpdate(const wchar_t* path)
 bool CheckInstall()
 {
 	UMcf updateMcf;
-	updateMcf.loadFromFile(UPDATEXML_W);
+	
+	if (!updateMcf.loadFromFile(UPDATEXML_W))
+		return false;
 
 	return updateMcf.checkFiles();
 }

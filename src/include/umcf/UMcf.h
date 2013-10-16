@@ -86,7 +86,7 @@ public:
 	bool isUpdateNewer();
 
 	//loads xml from a file
-	void loadFromFile(const wchar_t* file);
+	uint8 loadFromFile(const wchar_t* file);
 
 	//saves the xml to the path
 	void dumpXml(const wchar_t* path);

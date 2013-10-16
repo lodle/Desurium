@@ -104,7 +104,9 @@ void GCUpdateProcess::install()
 			deleteDumps();
 		
 		m_pOldMcf = new UMcf();
-		m_pOldMcf->loadFromFile(xmlPath.c_str());
+		
+		if (!m_pOldMcf->loadFromFile(xmlPath.c_str()))
+			throw gcException(ERR_INVALID, "Failed to load xml file");
 
 		UTIL::FS::delFile(gcString(xmlPath));
 

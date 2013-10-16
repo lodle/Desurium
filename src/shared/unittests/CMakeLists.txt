@@ -11,6 +11,7 @@ file(GLOB Sources code/util/gcBuff_test.cpp
                   code/util_fs/util_fs_getAllFolders.cpp
                   code/util_string/util_string_sanitizeFilePath.cpp
 				  code/event_test.cpp
+				  code/umcf_test.cpp
 )
 
 
@@ -21,6 +22,8 @@ add_library(unittest SHARED ${Sources})
 
 target_link_libraries(unittest
   util
+  umcf
+  ${TINYXML_LIBRARIES}
   util_fs
 )
 
