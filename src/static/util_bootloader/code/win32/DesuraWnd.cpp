@@ -112,10 +112,10 @@ HGDIOBJ CDC::SelectObject(HGDIOBJ pObject)
 	return ::SelectObject(m_hDC, pObject);
 }
 
-CFont* CDC::SelectObject(CFont* pFont)
+HGDIOBJ CDC::SelectObject(CFont* pFont)
 {
 	assert(m_hDC);
-	return NULL;
+	return ::SelectObject(m_hDC, *pFont);
 }
 
 void CDC::StretchBlt(int x, int y, int nWidth, int nHeight, CDC* pSrcDC,
