@@ -196,8 +196,11 @@ bool CheckInstall()
 {
 	UMcf updateMcf;
 	
-	if (!updateMcf.loadFromFile(UPDATEXML_W))
+	if (updateMcf.loadFromFile(UPDATEXML_W) != MCF_OK)
+	{
+		Log("Failed to open %s", UPDATEXML);
 		return false;
+	}
 
 	BadFileLogger bfl;
 	return updateMcf.checkFiles(&bfl);
@@ -324,11 +327,12 @@ void Log(const char* format, ...)
 	time(&rawtime);
 	localtime_s(&timeinfo, &rawtime);
 
-	strftime(buffer, 255, "%c:", &timeinfo);
+	strftime(buffer, 255, "%c: ", &timeinfo);
 	fprintf(g_pUpdateLog, buffer);
 
 	va_list args;
 	va_start(args, format);
 	vfprintf(g_pUpdateLog, format, args);
+	fprintf(g_pUpdateLog, "/n");
 	va_end(args);
 }
