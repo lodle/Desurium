@@ -398,6 +398,12 @@ void UMcf::parseUpdateXml(tinyxml2::XMLDocument &doc)
 //checks local files. returns true if they are good false if they are bad
 bool UMcf::checkFiles()
 {
+	return checkFiles(NULL);
+}
+
+//checks local files. returns true if they are good false if they are bad
+bool UMcf::checkFiles(IBadFileCallback *pCallback)
+{
 	uint32 prog = 0;
 
 	onProgressEvent(prog);
@@ -421,8 +427,8 @@ bool UMcf::checkFiles()
 		if (!m_pFileList[x]->checkFile(L"."))
 #endif
 		{
-			printf("Failed to check: [%s]\n", gcString(m_pFileList[x]->getName()).c_str());
-			return false;
+			if (!pCallback || pCallback->foundBadFile(m_pFileList[x]->getName(), m_pFileList[x]->getPath()))
+				return false;
 		}
 	}
 
