@@ -84,7 +84,7 @@ bool CGCServiceApp::start(int argc, char** argv)
 		return false;
 	}
 #endif
-	if (!m_SCDLL.load(".\\bin\\servicecore.dll")) 
+	if (!m_SCDLL.load("servicecore.dll")) 
 	{
 		log("Failed to load servicecore.dll.\n");
 		return false;
