@@ -38,6 +38,10 @@ bool CheckCert()
 	return false;
 #endif
 
+#ifndef WITH_CODESIGN
+	return false;
+#endif
+
 	wchar_t exePath[255];
 	GetModuleFileNameW(NULL, exePath, 255);
 
