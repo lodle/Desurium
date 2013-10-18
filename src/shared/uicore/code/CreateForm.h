@@ -37,11 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 class CreateMCFForm : public gcFrame 
 {
 public:
-#ifdef WIN32
-	CreateMCFForm( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Creating MCF"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 370,120 ), long style = wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxSYSTEM_MENU );
-#else // Linux needs more room as there is no custom border
-	CreateMCFForm( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Creating MCF"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 415,120 ), long style = wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxSYSTEM_MENU );
-#endif
+	CreateMCFForm(wxWindow* parent);
 	~CreateMCFForm();
 
 	void setInfo(DesuraId id);

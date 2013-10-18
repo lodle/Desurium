@@ -28,7 +28,8 @@ BEGIN_EVENT_TABLE( CreateMCFForm, gcFrame )
 	EVT_CLOSE( CreateMCFForm::onFormClose )
 END_EVENT_TABLE()
 
-CreateMCFForm::CreateMCFForm( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : gcFrame( parent, id, title, pos, size, style )
+CreateMCFForm::CreateMCFForm(wxWindow* parent) 
+	: gcFrame(parent, wxID_ANY, wxT("Creating MCF"), wxDefaultPosition,  wxSize( 370,120 ), wxCAPTION|wxCLOSE_BOX|wxFRAME_FLOAT_ON_PARENT|wxSYSTEM_MENU)
 {
 	m_bsSizer = new wxBoxSizer( wxVERTICAL );
 	this->SetSizer( m_bsSizer );
@@ -158,9 +159,9 @@ void CreateMCFForm::showOverView(const char* path)
 	m_bsSizer->Add( m_pPage, 1, wxEXPAND, 5 );
 
 #ifdef WIN32
-	this->SetSize(-1, -1, 370, 150);
+	this->SetSize(-1, -1, 370, 175);
 #else
-	this->SetSize(-1, -1, 415, 150);
+	this->SetSize(-1, -1, 415, 175);
 #endif
 
 	Layout();
