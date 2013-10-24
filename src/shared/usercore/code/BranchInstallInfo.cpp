@@ -592,7 +592,11 @@ bool BranchInstallInfo::processUpdateXml(tinyxml2::XMLNode* branch)
 		{
 			uint32 build = -1;
 			XML::GetChild("build", build, mcfEl);
-			m_NextBuild = MCFBuild::BuildFromInt(build);
+
+			if (m_INBuild == 0 || build > m_INBuild)
+				m_NextBuild = MCFBuild::BuildFromInt(build);
+			else
+				m_NextBuild = m_INBuild;
 		}
 	}					
 
@@ -612,3 +616,97 @@ void BranchInstallInfo::setLinkInfo(const char* exe, const char* args)
 
 }
 }
+
+
+#ifdef WITH_GTEST
+
+#include <gtest/gtest.h>
+
+namespace UnitTest
+{
+	using namespace UserCore;
+	using namespace UserCore::Item;
+
+	class StubBranchItemInfo : public BranchItemInfoI
+	{
+	public:
+		DesuraId getId() override
+		{
+			return DesuraId("1", "games");
+		}
+
+		uint32 getStatus() override
+		{
+			return m_nStatus;
+		}
+
+		uint32 m_nStatus = 0;
+	};
+
+
+	class BranchInstallInfoFixture : public ::testing::Test
+	{
+	public:
+		BranchInstallInfoFixture()
+			: m_BranchInstallInfo(1, &m_BranchItemInfo)
+		{
+		}
+
+		void setBuild(MCFBuild nBuild)
+		{
+			m_BranchInstallInfo.m_INBuild = nBuild;
+		}
+
+		MCFBuild getNextBuild()
+		{
+			return m_BranchInstallInfo.m_NextBuild;
+		}
+
+		bool processUpdateXml(tinyxml2::XMLNode* branch)
+		{
+			return m_BranchInstallInfo.processUpdateXml(branch);
+		}
+
+		StubBranchItemInfo m_BranchItemInfo;
+		BranchInstallInfo m_BranchInstallInfo;
+	};
+
+
+	TEST_F(BranchInstallInfoFixture, processUpdateXml_NewBuild)
+	{
+		setBuild(MCFBuild::BuildFromInt(2));
+
+		tinyxml2::XMLDocument doc;
+		doc.Parse("<branch><mcf id=\"123\"><build>3</build></mcf></branch>");
+
+		ASSERT_TRUE(processUpdateXml(doc.RootElement()), "processUpdateXml should of returned true indicating new build");
+		ASSERT_EQ(MCFBuild::BuildFromInt(3), getNextBuild());
+	}
+
+	TEST_F(BranchInstallInfoFixture, processUpdateXml_SameBuild)
+	{
+		setBuild(MCFBuild::BuildFromInt(2));
+
+		tinyxml2::XMLDocument doc;
+		doc.Parse("<branch><mcf id=\"123\"><build>2</build></mcf></branch>");
+
+		ASSERT_FALSE(processUpdateXml(doc.RootElement()), "processUpdateXml should of returned false indicating no new build");
+		ASSERT_EQ(MCFBuild::BuildFromInt(2), getNextBuild());
+	}
+
+	TEST_F(BranchInstallInfoFixture, processUpdateXml_OldBuild)
+	{
+		setBuild(MCFBuild::BuildFromInt(2));
+
+		tinyxml2::XMLDocument doc;
+		doc.Parse("<branch><mcf id=\"123\"><build>1</build></mcf></branch>");
+
+		ASSERT_FALSE(processUpdateXml(doc.RootElement()), "processUpdateXml should of returned false indicating no new build");
+		ASSERT_EQ(MCFBuild::BuildFromInt(2), getNextBuild());
+	}
+
+
+
+}
+
+#endif
