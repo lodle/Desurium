@@ -44,7 +44,7 @@ namespace Item
 {
 
 
-ItemInfo::ItemInfo(UserCore::User *user, DesuraId id)
+ItemInfo::ItemInfo(UserCore::ItemInfoUserI *user, DesuraId id)
 {
 	initVars();
 	m_pUserCore = user;
@@ -52,7 +52,7 @@ ItemInfo::ItemInfo(UserCore::User *user, DesuraId id)
 }
 
 
-ItemInfo::ItemInfo(UserCore::User *user, DesuraId id, DesuraId parid)
+ItemInfo::ItemInfo(UserCore::ItemInfoUserI *user, DesuraId id, DesuraId parid)
 {
 	initVars();
 	m_pUserCore = user;

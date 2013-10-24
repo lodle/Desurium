@@ -35,7 +35,7 @@ namespace sqlite3x
 
 namespace UserCore
 {
-	class User;
+	class ItemInfoUserI;
 
 namespace Item
 {
@@ -50,14 +50,14 @@ public:
 	//!
 	//! @param id Item internal id
 	//!
-	ItemInfo(UserCore::User *user, DesuraId id);
+	ItemInfo(UserCore::ItemInfoUserI *user, DesuraId id);
 
 	//! Constuctor
 	//!
 	//! @param id Item internal id
 	//! @param parid Parent internal id
 	//!
-	ItemInfo(UserCore::User *user, DesuraId id, DesuraId parid);
+	ItemInfo(UserCore::ItemInfoUserI *user, DesuraId id, DesuraId parid);
 	~ItemInfo();
 
 	//inherited methods
@@ -305,7 +305,7 @@ protected:
 	//!
 	//! @return UserCore
 	//!
-	UserCore::User* getUserCore();
+	UserCore::ItemInfoUserI* getUserCore();
 
 
 	void broughtCheck();
@@ -365,7 +365,7 @@ private:
 	std::vector<BranchInfo*> m_vBranchList;
 	std::map<uint32, BranchInstallInfo*> m_mBranchInstallInfo;
 
-	UserCore::User *m_pUserCore; 
+	UserCore::ItemInfoUserI *m_pUserCore;
 };
 
 
@@ -562,7 +562,7 @@ inline void ItemInfo::setName(const char* name)
 	m_szName = gcString(name);
 }
 
-inline UserCore::User* ItemInfo::getUserCore()
+inline UserCore::ItemInfoUserI* ItemInfo::getUserCore()
 {
 	return m_pUserCore;
 }

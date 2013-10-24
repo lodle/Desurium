@@ -36,6 +36,8 @@ class WildcardManager;
 namespace UserCore
 {
 
+	class User;
+
 namespace Item
 {
 	class ItemTaskGroup;

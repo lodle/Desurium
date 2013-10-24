@@ -82,7 +82,20 @@ enum PlatformType
 	PT_Tool,
 };
 
-class User : public UserI
+
+class ItemInfoUserI
+{
+public:
+	virtual const char* getAppDataPath() = 0;
+	virtual UserCore::ItemManagerI* getItemManager() = 0;
+	virtual void downloadImage(UserCore::Item::ItemInfo* itemInfo, uint8 image) = 0;
+	virtual void changeAccount(DesuraId id, uint8 action) = 0;
+
+	virtual bool isDelayLoading() = 0;
+	virtual Event<uint32>* getItemsAddedEvent() = 0;
+};
+
+class User : public UserI, public ItemInfoUserI
 {
 public:
 	User();
