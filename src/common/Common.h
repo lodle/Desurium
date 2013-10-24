@@ -838,3 +838,6 @@ T Clamp(T val, T minVal, T maxVal)
 #ifdef NIX
 #define override
 #endif
+
+bool CheckVerify(bool bCon, const char* szFunction, const char* szCheck);
+#define VERIFY_OR_RETURN( con, ret ) {if (!CheckVerify(con, __FUNCTION__, #con)) return ret;}
