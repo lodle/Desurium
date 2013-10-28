@@ -303,7 +303,7 @@ bool BranchInstallInfo::updateInstallCheck(gcString &strCheckRes, const gcString
 
 void BranchInstallInfo::UpdateInstallCheckList(const std::vector<InsCheck> &vInsChecks, WildcardManager* pWildCard)
 {
-	VERIFY_OR_RETURN(pWildCard, );
+	VERIFY_OR_RETURN(!!pWildCard, );
 
 	std::for_each(begin(vInsChecks), end(vInsChecks), [this, pWildCard](const InsCheck &check)
 	{
@@ -539,7 +539,7 @@ uint32 BranchInstallInfo::getExeCount(bool setActive)
 
 bool BranchInstallInfo::isInstalled()
 {
-	return m_pItem->getStatus() & UM::ItemInfoI::STATUS_INSTALLED;
+	return (m_pItem->getStatus() & UM::ItemInfoI::STATUS_INSTALLED) == UM::ItemInfoI::STATUS_INSTALLED;
 }
 
 void BranchInstallInfo::setPath(const char *path)		
@@ -781,7 +781,7 @@ bool BranchInstallInfo::isValidFile(const gcString &strFile)
 
 void BranchInstallInfo::setLinkInfo(const char* szPath, const char* szExe, const char* szArgs)
 {
-	if (m_pItem->getStatus() & ItemInfo::STATUS_LINK != ItemInfo::STATUS_LINK)
+	if ((m_pItem->getStatus() & ItemInfo::STATUS_LINK) != ItemInfo::STATUS_LINK)
 		return;
 
 	setPath(szPath);
@@ -1076,8 +1076,6 @@ namespace UnitTest
 		
 		ASSERT_FALSE(updateInstallCheck(strPath, "D:\\abc"));
 		ASSERT_STREQ("C:\\abc\\def\\check.txt", strPath.c_str());
-
-		std::isfinite(0.00);
 	}
 
 
