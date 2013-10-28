@@ -135,6 +135,7 @@ public:
 	//!
 	ProcessResult processSettings(tinyxml2::XMLNode* setNode, WildcardManager* pWildCard, bool reset, bool hasBroughtItem, const char* cipPath);
 
+
 	void setLinkInfo(const char* szPath, const char* szExe, const char* szArgs);
 
 	uint32 getExeCount(bool setActive);
@@ -186,10 +187,11 @@ protected:
 	bool isInstalled();
 
 
-	void extractInstallChecks(tinyxml2::XMLNode* icsNode, std::vector<InsCheck> &vInsChecks);
+	void extractInstallChecks(tinyxml2::XMLNode* icsNode, WildcardManager* pWildCard, std::vector<InsCheck> &vInsChecks);
 
 	//Used for install items to convert install check to path relative to the dir the item is installed to
 	bool updateInstallCheck(gcString &strCheckRes, const gcString &strPath);
+	void UpdateInstallCheckList(const std::vector<InsCheck> &vInsChecks, WildcardManager* pWildCard);
 
 private:
 	gcString m_szPath;
@@ -198,7 +200,9 @@ private:
 	gcString m_szInsVersion;
 
 	gcString m_szActiveExe;
+
 	std::vector<ExeInfo*> m_vExeList;
+	std::vector<gcString> m_vInstallChecks;
 
 	MCFBuild m_NextBuild;	//next build
 	MCFBuild m_INBuild;		//installed build

@@ -66,10 +66,26 @@ void BranchInstallInfo::deleteFromDb(sqlite3x::sqlite3_connection* db)
 {
 	try
 	{
-		sqlite3x::sqlite3_command cmd(*db, "DELETE FROM installinfo WHERE itemid=? AND biid=?;");
-		cmd.bind(1, (long long int)m_ItemId.toInt64());
-		cmd.bind(2, (int)m_BiId);
-		cmd.executenonquery();
+		{
+			sqlite3x::sqlite3_command cmd(*db, "DELETE FROM installinfo WHERE itemid=? AND biid=?;");
+			cmd.bind(1, (long long int)m_ItemId.toInt64());
+			cmd.bind(2, (int)m_BiId);
+			cmd.executenonquery();
+		}
+
+		{
+			sqlite3x::sqlite3_command cmd(*db, "DELETE FROM installinfoex WHERE itemid=? AND biid=?;");
+			cmd.bind(1, (long long int)m_ItemId.toInt64());
+			cmd.bind(2, (int)m_BiId);
+			cmd.executenonquery();
+		}
+
+		{
+			sqlite3x::sqlite3_command cmd(*db, "DELETE FROM exe WHERE itemid=? AND biid=?;");
+			cmd.bind(1, (long long int)m_ItemId.toInt64());
+			cmd.bind(2, (int)m_BiId);
+			cmd.executenonquery();
+		}
 	}
 	catch (...)
 	{
@@ -91,7 +107,6 @@ void BranchInstallInfo::saveDb(sqlite3x::sqlite3_connection* db)
 
 	cmd.executenonquery();
 
-
 	for (size_t x=0; x<m_vExeList.size(); x++)
 	{
 		ExeInfo *ei = m_vExeList[x];
@@ -106,6 +121,27 @@ void BranchInstallInfo::saveDb(sqlite3x::sqlite3_connection* db)
 		cmd.bind(6, ei->m_szUserArgs);
 		cmd.bind(7, (int)ei->m_uiRank);
 
+		cmd.executenonquery();
+	}
+
+	if (isInstalled())
+	{
+		std::for_each(begin(m_vInstallChecks), end(m_vInstallChecks), [db, this](gcString &check)
+		{
+			sqlite3x::sqlite3_command cmd(*db, "REPLACE INTO installinfoex VALUES (?,?,?);");
+
+			cmd.bind(1, (long long int)m_ItemId.toInt64());
+			cmd.bind(2, (int)m_BiId);
+			cmd.bind(3, check);
+
+			cmd.executenonquery();
+		});
+	}
+	else
+	{
+		sqlite3x::sqlite3_command cmd(*db, "DELETE FROM installinfoex WHERE itemid=? AND biid=?;");
+		cmd.bind(1, (long long int)m_ItemId.toInt64());
+		cmd.bind(2, (int)m_BiId);
 		cmd.executenonquery();
 	}
 }
@@ -130,6 +166,32 @@ void BranchInstallInfo::loadDb(sqlite3x::sqlite3_connection* db)
 		m_iInstalledMod = DesuraId(reader.getint64(5));
 		m_INBuild		= MCFBuild::BuildFromInt(reader.getint(6));
 		m_LastBuild		= MCFBuild::BuildFromInt(reader.getint(7));
+	}
+
+	if (isInstalled())
+	{
+		sqlite3x::sqlite3_command cmd(*db, "SELECT installcheck FROM installinfoex WHERE itemid=? AND biid=?;");
+		cmd.bind(1, (long long int)m_ItemId.toInt64());
+		cmd.bind(2, (int)m_BiId);
+
+		sqlite3x::sqlite3_reader reader = cmd.executereader();
+	
+		while (reader.read())
+		{
+			m_vInstallChecks.push_back(reader.getstring(0));
+		}
+
+		if (!isValidFile(m_szInsCheck))
+		{
+			for (size_t x=0; x<m_vInstallChecks.size(); ++x)
+			{
+				if (isValidFile(m_vInstallChecks[x]))
+				{
+					m_szInsCheck = m_vInstallChecks[x];
+					break;
+				}
+			}
+		}
 	}
 
 	{
@@ -173,9 +235,9 @@ void BranchInstallInfo::loadDb(sqlite3x::sqlite3_connection* db)
 }
 
 
-void BranchInstallInfo::extractInstallChecks(tinyxml2::XMLNode* icsNode, std::vector<InsCheck> &vInsChecks)
+void BranchInstallInfo::extractInstallChecks(tinyxml2::XMLNode* icsNode, WildcardManager* pWildCard, std::vector<InsCheck> &vInsChecks)
 {
-	XML::for_each_child("installlocation", icsNode, [&vInsChecks](tinyxml2::XMLNode* icNode)
+	XML::for_each_child("installlocation", icsNode, [&vInsChecks, pWildCard, this](tinyxml2::XMLNode* icNode)
 	{
 		gcString iCheck;
 		gcString iPath;
@@ -184,7 +246,27 @@ void BranchInstallInfo::extractInstallChecks(tinyxml2::XMLNode* icsNode, std::ve
 		XML::GetChild("path", iPath, icNode);
 
 		if (iCheck.size() > 0 && iPath.size() > 0)
-			vInsChecks.push_back(InsCheck(iCheck.c_str(), iPath.c_str()));
+		{
+			try
+			{
+				gcString strCheckRes = pWildCard->constructPath(iCheck.c_str());
+
+				if (isInstalled())
+				{
+					if (!updateInstallCheck(strCheckRes, iPath))
+						return;
+
+					vInsChecks.push_back(InsCheck(strCheckRes.c_str(), m_szPath.c_str()));
+				}
+				else
+				{
+					vInsChecks.push_back(InsCheck(strCheckRes.c_str(), iPath.c_str()));
+				}
+			}
+			catch (...)
+			{
+			}
+		}
 	});
 }
 
@@ -219,6 +301,33 @@ bool BranchInstallInfo::updateInstallCheck(gcString &strCheckRes, const gcString
 	return true;
 }
 
+void BranchInstallInfo::UpdateInstallCheckList(const std::vector<InsCheck> &vInsChecks, WildcardManager* pWildCard)
+{
+	VERIFY_OR_RETURN(pWildCard, );
+
+	std::for_each(begin(vInsChecks), end(vInsChecks), [this, pWildCard](const InsCheck &check)
+	{
+		gcString strPath;
+
+		try
+		{
+			strPath = pWildCard->constructPath(check.path.c_str());
+		}
+		catch (...)
+		{
+			return;
+		}
+
+		if (strPath.find(m_szPath) != 0)
+			return;
+
+		if (std::find(begin(m_vInstallChecks), end(m_vInstallChecks), check.check) != m_vInstallChecks.end())
+			return;
+
+		m_vInstallChecks.push_back(check.check);
+	});
+}
+
 ProcessResult BranchInstallInfo::processSettings(tinyxml2::XMLNode* setNode, WildcardManager* pWildCard, bool reset, bool hasBroughtItem, const char* cipPath)
 {
 	ProcessResult pr;
@@ -228,52 +337,39 @@ ProcessResult BranchInstallInfo::processSettings(tinyxml2::XMLNode* setNode, Wil
 
 	tinyxml2::XMLElement* icsNode = setNode->FirstChildElement("installlocations");
 	
+	if (!isInstalled())
+		m_vInstallChecks.clear();
+
 	if (icsNode)
 	{
-		std::vector<InsCheck> insCheck;
-		extractInstallChecks(icsNode, insCheck);
+		std::vector<InsCheck> vInsChecks;
+		extractInstallChecks(icsNode, pWildCard, vInsChecks);
+		UpdateInstallCheckList(vInsChecks, pWildCard);
 
-		size_t size = insCheck.size();
+		size_t size = vInsChecks.size();
 
-		//only care about the first item for bought items
-		if ((reset || hasBroughtItem) && size)
+		//only care about the first item for bought items when we are not already installed
+		if ((reset || (hasBroughtItem && !isInstalled())) && size)
 			size = 1;
-
 
 		for (size_t x=0; x<size; x++)
 		{
-			char* szCheckRes = NULL;
-			try
+			if (isValidFile(vInsChecks[x].check))
 			{
-				pWildCard->constructPath(insCheck[x].check.c_str(), &szCheckRes);
-				gcString strCheckRes(szCheckRes);
-				safe_delete(szCheckRes);
+				setInsCheck(vInsChecks[x].check.c_str());
 
-				if (isInstalled() && !updateInstallCheck(strCheckRes, insCheck[x].path))
-					continue;
+				if (isInstalled())
+					pWildCard->updateInstallWildcard("INSTALL_PATH", m_szPath.c_str());
+				else
+					pWildCard->updateInstallWildcard("INSTALL_PATH", vInsChecks[x].path.c_str());
 
-				if (isValidFile(strCheckRes))
-				{
-					setInsCheck(strCheckRes.c_str());
-
-					if (isInstalled())
-						pWildCard->updateInstallWildcard("INSTALL_PATH", m_szPath.c_str());
-					else
-						pWildCard->updateInstallWildcard("INSTALL_PATH", insCheck[x].path.c_str());
-
-					pr.found = true;
-					pr.notFirst = (x != 0);	
-					break;
-				}
+				pr.found = true;
+				pr.notFirst = (x != 0);	
+				break;
 			}
-			catch (gcException &e)
-			{
-			}
-
-			safe_delete(szCheckRes);
 		}
 
-		if (!pr.found && insCheck.size()>0)
+		if (!pr.found && vInsChecks.size()>0)
 		{
 			if (isInstalled())
 			{
@@ -289,10 +385,10 @@ ProcessResult BranchInstallInfo::processSettings(tinyxml2::XMLNode* setNode, Wil
 				char* CheckRes = NULL;
 				try
 				{
-					pWildCard->constructPath(insCheck[0].check.c_str(), &CheckRes);
+					pWildCard->constructPath(vInsChecks[0].check.c_str(), &CheckRes);
 
 					setInsCheck(CheckRes);
-					pWildCard->updateInstallWildcard("INSTALL_PATH", insCheck[0].path.c_str());
+					pWildCard->updateInstallWildcard("INSTALL_PATH", vInsChecks[0].path.c_str());
 				}
 				catch (gcException)
 				{
@@ -340,6 +436,9 @@ ProcessResult BranchInstallInfo::processSettings(tinyxml2::XMLNode* setNode, Wil
 		processExes(setNode, pWildCard, pr.useCip);
 		launchExeHack();
 	}
+
+	if (m_vInstallChecks.size() == 0)
+		m_vInstallChecks.push_back(m_szInsCheck);
 
 	pr.insCheck = m_szInsCheck;
 	return pr;
@@ -771,18 +870,34 @@ namespace UnitTest
 			m_BranchInstallInfo.m_szPath = strPath;
 			m_BranchInstallInfo.m_szInsCheck = strCheck;
 			m_BranchInstallInfo.m_szInsPrim = strPrim;
+
+			m_BranchInstallInfo.m_vInstallChecks.push_back(strCheck);
 		}
 
-		void checkInstallInfo(const gcString &strPath, const gcString &strCheck, const gcString &strPrim)
+		void checkInstallInfo(const gcString &strPath, const gcString &strCheck, const gcString &strPrim, int nValidFileCount = -1)
 		{
 			ASSERT_EQ(strPath, m_BranchInstallInfo.m_szPath);
 			ASSERT_EQ(strCheck, m_BranchInstallInfo.m_szInsCheck);
 			ASSERT_EQ(strPrim, m_BranchInstallInfo.m_szInsPrim);
+
+			if (m_BranchInstallInfo.isInstalled())
+			{
+				if (nValidFileCount == -1)
+					ASSERT_GT(0, m_BranchInstallInfo.m_vInstallChecks.size());
+				else
+					ASSERT_EQ(nValidFileCount, m_BranchInstallInfo.m_vInstallChecks.size());
+			}
+				
 		}
 
 		bool updateInstallCheck(gcString &strCheckRes, const gcString &strPath)
 		{
 			return m_BranchInstallInfo.updateInstallCheck(strCheckRes, strPath);
+		}
+
+		void extractInstallChecks(tinyxml2::XMLNode* icsNode, WildcardManager* pWildCard, std::vector<InsCheck> &vInsChecks)
+		{
+			m_BranchInstallInfo.extractInstallChecks(icsNode, pWildCard, vInsChecks);
 		}
 
 		StubBranchItemInfo m_BranchItemInfo;
@@ -830,12 +945,24 @@ namespace UnitTest
 				"<installlocations>"
 					"<installlocation><check>path_a\\check_a.txt</check><path>path_a</path></installlocation>"
 					"<installlocation><check>path_b\\check_b.txt</check><path>path_b</path></installlocation>"
-					"<installlocation><check>check_c</check><path>path_c</path></installlocation>"
+					"<installlocation><check>path_c\\check_c.txt</check><path>path_c</path></installlocation>"
 				"</installlocations>"
 				"<executes>"
 					"<execute><name>Test</name><exe>test.exe</exe><args></args></execute>"
 				"</executes>"
 			"</branch>";
+
+	static const char* gs_szInstallLocationsXml = 
+				"<installlocations>"
+					"<installlocation><check>%WILDCARD_A%\\%WILDCARD_B%\\a.txt</check><path>%WILDCARD_A%\\%WILDCARD_B%</path></installlocation>"
+					"<installlocation><check>relativepath\\b.txt</check><path>relativepath</path></installlocation>"
+				"</installlocations>";
+
+	static const char* gs_szWildcardXml =
+		"<wcards>"
+			"<wcard name=\"WILDCARD_A\" type=\"path\">alpha</wcard>"
+			"<wcard name=\"WILDCARD_B\" type=\"path\">bravo</wcard>"
+		"</wcards>";
 
 
 	TEST_F(BranchInstallInfoFixture, processSettings_InitEmpty)
@@ -909,7 +1036,7 @@ namespace UnitTest
 		ASSERT_TRUE(res.found);
 		ASSERT_STREQ("path_a\\check_b.txt", res.insCheck.c_str());
 
-		checkInstallInfo("path_a", "path_a\\check_b.txt", "insprim");
+		checkInstallInfo("path_a", "path_a\\check_b.txt", "insprim", 3);
 	}
 
 
@@ -944,8 +1071,36 @@ namespace UnitTest
 		
 		ASSERT_FALSE(updateInstallCheck(strPath, "D:\\abc"));
 		ASSERT_STREQ("C:\\abc\\def\\check.txt", strPath.c_str());
+
+		std::isfinite(0.00);
 	}
 
+
+	TEST_F(BranchInstallInfoFixture, extractInstallChecks_expandPath)
+	{
+		WildcardManager wildCards;
+
+		{
+			tinyxml2::XMLDocument doc;
+			doc.Parse(gs_szWildcardXml);
+			wildCards.parseXML(doc.RootElement());
+		}
+
+		std::vector<InsCheck> vInsChecks;
+
+		tinyxml2::XMLDocument doc;
+		doc.Parse(gs_szInstallLocationsXml);
+
+		extractInstallChecks(doc.RootElement(), &wildCards, vInsChecks);
+
+		ASSERT_EQ(2, vInsChecks.size());
+
+		ASSERT_STREQ("alpha\\bravo\\a.txt", vInsChecks[0].check.c_str());
+		ASSERT_STREQ("%WILDCARD_A%\\%WILDCARD_B%", vInsChecks[0].path.c_str());
+
+		ASSERT_STREQ("relativepath\\b.txt", vInsChecks[1].check.c_str());
+		ASSERT_STREQ("relativepath", vInsChecks[1].path.c_str());
+	}
 }
 
 #endif
