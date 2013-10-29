@@ -693,7 +693,7 @@ namespace UnitTest
 				sqlite3x::sqlite3_command cmd(db, "INSERT INTO mcfitem VALUES (?,?,?,?,?);");
 				cmd.bind(1, (long long int)id.toInt64());
 				cmd.bind(2, 0);
-				cmd.bind(3, strPath);
+				cmd.bind(3, UTIL::FS::PathWithFile(strPath).getFullPath());
 				cmd.bind(4, 0);
 				cmd.bind(5, bUnAuthed ? FLAG_UNAUTHED : 0);
 
