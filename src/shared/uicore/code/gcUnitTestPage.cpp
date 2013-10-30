@@ -96,8 +96,11 @@ public:
 		m_strFilter = g_strUnitTestFilter.getString();
 
 		GTEST_FLAG(filter) = m_strFilter;
-		RUN_ALL_TESTS();
+		int nRes = RUN_ALL_TESTS();
 		GTEST_FLAG(filter) = NULL;
+
+		if (nRes != 0)
+			Warning(gcString("RUN_ALL_TESTS failed with result {0}", nRes));
 
 #ifdef WIN32
 		//Reset this as gtest messes with it :'(

@@ -55,10 +55,11 @@ public:
 
 #ifdef NIX
 		wxSize s = this->GetSize() - this->GetClientSize();
-		m_uiTitleHeight = s.GetHeight();
 
-		if (m_uiTitleHeight < 0)
+		if (s.GetHeight() < 0)
 			m_uiTitleHeight = 0;
+		else
+			m_uiTitleHeight = s.GetHeight();
 #endif
 
 		this->Layout();

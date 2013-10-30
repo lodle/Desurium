@@ -284,10 +284,12 @@ void DesuraControl::setActivePage_ID(int32 id)
 
 void DesuraControl::setActivePage(PAGE index, bool reset)
 {
-	if (index == UNKNOWN_ITEM || m_iIndex == index)
+	uint32 iIndex = (uint32)index;
+
+	if (iIndex == UNKNOWN_ITEM || m_iIndex == iIndex)
 		return;
 
-	if (m_vTabInfo.size() == 0 || (size_t)index > m_vTabInfo.size()-1)
+	if (m_vTabInfo.size() == 0 || iIndex > m_vTabInfo.size()-1)
 		return;
 
 	if (m_iIndex != UINT_MAX && m_vTabInfo[m_iIndex]->header)
@@ -295,7 +297,7 @@ void DesuraControl::setActivePage(PAGE index, bool reset)
 
 	this->Freeze();
 
-	m_pMenuStrip->setSelected(index);
+	m_pMenuStrip->setSelected(iIndex);
 	m_sizerContent->Clear();
 	m_sizerHeader->Clear();
 
@@ -306,22 +308,22 @@ void DesuraControl::setActivePage(PAGE index, bool reset)
 		m_vTabInfo[m_iIndex]->page->Show(false);
 	}
 
-	loadSearch(m_vTabInfo[index]->page);
-	m_vTabInfo[index]->page->setSelected(true);
-	m_vTabInfo[index]->page->SetFocus();
-	m_vTabInfo[index]->page->Show(true);
-	m_vTabInfo[index]->header->Show(true);
+	loadSearch(m_vTabInfo[iIndex]->page);
+	m_vTabInfo[iIndex]->page->setSelected(true);
+	m_vTabInfo[iIndex]->page->SetFocus();
+	m_vTabInfo[iIndex]->page->Show(true);
+	m_vTabInfo[iIndex]->header->Show(true);
 
 	if (reset)
-		m_vTabInfo[index]->page->reset();
+		m_vTabInfo[iIndex]->page->reset();
 	
-	m_sizerContent->Add( m_vTabInfo[index]->page, 1, wxEXPAND|wxBOTTOM, 1 );
-	m_sizerHeader->Add( m_vTabInfo[index]->header, 1, wxEXPAND|wxBOTTOM, 1 );
+	m_sizerContent->Add( m_vTabInfo[iIndex]->page, 1, wxEXPAND|wxBOTTOM, 1 );
+	m_sizerHeader->Add( m_vTabInfo[iIndex]->header, 1, wxEXPAND|wxBOTTOM, 1 );
 
 	this->Thaw();
 	this->Layout();
 
-	m_iIndex = index;
+	m_iIndex = iIndex;
 }	
 
 void DesuraControl::showLeftBorder(bool state)
